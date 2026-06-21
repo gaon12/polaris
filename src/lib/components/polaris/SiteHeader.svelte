@@ -3,19 +3,22 @@
 	import { resolve } from '$app/paths';
 	import { page } from '$app/state';
 	import { locales, localizeHref } from '$lib/paraglide/runtime';
+	import type { MenuItem } from '$lib/polaris/home';
 	import BrandMark from './BrandMark.svelte';
 	import DisplaySettingsModal from './DisplaySettingsModal.svelte';
 
 	let {
 		menuItems
 	}: {
-		menuItems: Array<{ label: string; href: string }>;
+		menuItems: MenuItem[];
 	} = $props();
 
 	type Locale = (typeof locales)[number];
 
 	let settingsOpen = $state(false);
 	let selectedLocale = $state<Locale>('ko');
+	let activeMenu = $state<string | null>(null);
+	const activeMenuItem = $derived(menuItems.find((item) => item.label === activeMenu));
 
 	function changeLanguage(event: Event) {
 		const target = event.currentTarget as HTMLSelectElement;
@@ -26,6 +29,15 @@
 
 	function scrollToTarget(target: string) {
 		document.querySelector(target)?.scrollIntoView({ behavior: 'smooth' });
+	}
+
+	function toggleMenu(item: MenuItem) {
+		activeMenu = activeMenu === item.label ? null : item.label;
+	}
+
+	function openMenuTarget(item: MenuItem) {
+		scrollToTarget(item.href);
+		activeMenu = null;
 	}
 </script>
 
@@ -70,12 +82,36 @@
 
 	<nav class="main-menu" aria-label="주 메뉴">
 		{#each menuItems as item (item.label)}
-			<button onclick={() => scrollToTarget(item.href)} type="button">
+			<button
+				aria-controls="menu-detail-panel"
+				aria-expanded={activeMenu === item.label}
+				class:active={activeMenu === item.label}
+				onclick={() => toggleMenu(item)}
+				type="button"
+			>
 				{item.label}
 				<span class="chevron" aria-hidden="true"></span>
 			</button>
 		{/each}
 	</nav>
+
+	{#if activeMenuItem}
+		<div class="menu-detail" id="menu-detail-panel">
+			<div>
+				<p>메뉴 상세</p>
+				<h2>{activeMenuItem.label}</h2>
+				<span>{activeMenuItem.summary}</span>
+			</div>
+			<ul>
+				{#each activeMenuItem.points as point (point)}
+					<li>{point}</li>
+				{/each}
+			</ul>
+			<button type="button" onclick={() => openMenuTarget(activeMenuItem)}
+				>{activeMenuItem.action}</button
+			>
+		</div>
+	{/if}
 </header>
 
 <DisplaySettingsModal open={settingsOpen} onClose={() => (settingsOpen = false)} />
@@ -240,12 +276,79 @@
 		font-weight: 700;
 	}
 
+	.main-menu button.active {
+		color: #0b50d0;
+	}
+
 	.chevron {
 		width: 8px;
 		height: 8px;
 		border-right: 2px solid currentColor;
 		border-bottom: 2px solid currentColor;
 		transform: translateY(-2px) rotate(45deg);
+	}
+
+	.main-menu button.active .chevron {
+		transform: translateY(2px) rotate(225deg);
+	}
+
+	.menu-detail {
+		display: grid;
+		grid-template-columns: minmax(0, 0.9fr) minmax(260px, 1fr) auto;
+		gap: 28px;
+		width: min(100% - 48px, 1200px);
+		margin: 0 auto 20px;
+		padding: 24px;
+		border: 1px solid #cdd1d5;
+		border-radius: 8px;
+		background: #f8f8f8;
+		color: #1e2124;
+		word-break: keep-all;
+		overflow-wrap: break-word;
+	}
+
+	.menu-detail p,
+	.menu-detail h2,
+	.menu-detail span {
+		margin: 0;
+	}
+
+	.menu-detail p {
+		color: #0b50d0;
+		font-weight: 700;
+	}
+
+	.menu-detail h2 {
+		margin-top: 8px;
+		font-size: 28px;
+		line-height: 1.25;
+	}
+
+	.menu-detail span {
+		display: block;
+		margin-top: 10px;
+		color: #464c53;
+	}
+
+	.menu-detail ul {
+		display: grid;
+		gap: 8px;
+		margin: 0;
+		padding-left: 20px;
+		color: #33363d;
+	}
+
+	.menu-detail button {
+		align-self: center;
+		min-height: 48px;
+		padding: 0 18px;
+		border: 1px solid #256ef4;
+		border-radius: 6px;
+		background: #256ef4;
+		color: #ffffff;
+		cursor: pointer;
+		font-weight: 700;
+		white-space: nowrap;
 	}
 
 	@media (max-width: 900px) {
@@ -268,6 +371,15 @@
 			gap: 28px;
 			overflow-x: clip;
 			font-size: 18px;
+		}
+
+		.menu-detail {
+			grid-template-columns: 1fr;
+			width: min(100% - 32px, 1200px);
+		}
+
+		.menu-detail button {
+			justify-self: start;
 		}
 	}
 

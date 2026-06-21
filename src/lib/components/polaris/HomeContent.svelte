@@ -1,5 +1,6 @@
 <script lang="ts">
-	import { bulletinBlocks, features, quickLinks, workflow } from '$lib/polaris/home';
+	import AudienceTabs from './AudienceTabs.svelte';
+	import { audienceTabs, bulletinBlocks, features, workflow } from '$lib/polaris/home';
 </script>
 
 <section class="section intro" id="start" aria-labelledby="start-title">
@@ -12,47 +13,7 @@
 		</p>
 	</div>
 
-	<div class="tabs" role="tablist" aria-label="사용자 유형">
-		<button class="active" type="button">주보 담당자</button>
-		<button type="button">목회자</button>
-		<button type="button">성도</button>
-	</div>
-
-	<div class="quick-grid">
-		<div class="quick-list">
-			{#each quickLinks as link (link.title)}
-				<article class="quick-card">
-					<span>{link.tag}</span>
-					<h3>{link.title}</h3>
-					<p>{link.description}</p>
-					<a href="#workflow">{link.action}</a>
-				</article>
-			{/each}
-		</div>
-		<div class="preview-panel" aria-label="모바일 주보 미리보기">
-			<div class="phone-shell">
-				<div class="phone-header">
-					<span>은혜샘교회</span>
-					<strong>주일예배</strong>
-				</div>
-				<div class="phone-card">
-					<small>오늘의 말씀</small>
-					<strong>한 화면에서 이어지는 예배</strong>
-					<p>요한복음 3:16-17</p>
-				</div>
-				<div class="phone-list">
-					<span>묵도</span>
-					<span>찬양</span>
-					<span>성경 봉독</span>
-					<span>설교</span>
-				</div>
-				<div class="phone-actions">
-					<span>지도 보기</span>
-					<span>문의하기</span>
-				</div>
-			</div>
-		</div>
-	</div>
+	<AudienceTabs tabs={audienceTabs} />
 </section>
 
 <section class="section bulletin" id="bulletin" aria-labelledby="bulletin-title">
@@ -161,31 +122,6 @@
 		font-size: 20px;
 	}
 
-	.tabs {
-		display: flex;
-		gap: 28px;
-		margin-bottom: 24px;
-		border-bottom: 1px solid #cdd1d5;
-		overflow: hidden;
-	}
-
-	.tabs button {
-		min-height: 52px;
-		border: 0;
-		border-bottom: 4px solid transparent;
-		background: transparent;
-		color: #464c53;
-		font-weight: 700;
-		cursor: pointer;
-		white-space: nowrap;
-	}
-
-	.tabs .active {
-		border-color: #0b50d0;
-		color: #052561;
-	}
-
-	.quick-grid,
 	.split,
 	.search-section {
 		display: grid;
@@ -193,12 +129,6 @@
 		gap: 24px;
 	}
 
-	.quick-list {
-		display: grid;
-		gap: 16px;
-	}
-
-	.quick-card,
 	.bulletin-grid article,
 	.feature-grid article {
 		border: 1px solid #cdd1d5;
@@ -206,13 +136,11 @@
 		background: #ffffff;
 	}
 
-	.quick-card,
 	.bulletin-grid article,
 	.feature-grid article {
 		padding: 28px;
 	}
 
-	.quick-card span,
 	.bulletin-grid span {
 		display: inline-flex;
 		margin-bottom: 14px;
@@ -231,96 +159,11 @@
 		line-height: 1.35;
 	}
 
-	.quick-card p,
 	.bulletin-grid p,
 	.feature-grid p {
 		margin: 12px 0 0;
 		color: #464c53;
 		font-size: 17px;
-	}
-
-	.quick-card a {
-		display: inline-flex;
-		margin-top: 20px;
-		color: #0b50d0;
-		font-weight: 700;
-		text-decoration: underline;
-		text-underline-offset: 4px;
-	}
-
-	.preview-panel {
-		display: grid;
-		min-height: 420px;
-		place-items: center;
-		border-radius: 8px;
-		background: #eef2f7;
-	}
-
-	.phone-shell {
-		width: min(280px, 80%);
-		padding: 18px;
-		border: 10px solid #1e2124;
-		border-radius: 28px;
-		background: #ffffff;
-		box-shadow: 0 24px 60px rgba(3, 22, 58, 0.18);
-	}
-
-	.phone-header {
-		display: flex;
-		justify-content: space-between;
-		gap: 12px;
-		padding-bottom: 12px;
-		border-bottom: 1px solid #e6e8ea;
-		font-size: 14px;
-	}
-
-	.phone-card,
-	.phone-list,
-	.phone-actions {
-		margin-top: 14px;
-	}
-
-	.phone-card {
-		padding: 18px;
-		border-radius: 8px;
-		background: #ecf2fe;
-	}
-
-	.phone-card small {
-		color: #0b50d0;
-		font-weight: 700;
-	}
-
-	.phone-card strong {
-		display: block;
-		margin-top: 8px;
-		font-size: 20px;
-		line-height: 1.25;
-	}
-
-	.phone-list,
-	.phone-actions {
-		display: grid;
-		gap: 8px;
-	}
-
-	.phone-list span,
-	.phone-actions span {
-		padding: 10px 12px;
-		border-radius: 6px;
-		background: #f4f5f6;
-		color: #33363d;
-		font-weight: 700;
-	}
-
-	.phone-actions {
-		grid-template-columns: 1fr 1fr;
-	}
-
-	.phone-actions span {
-		background: #122b18;
-		color: #ffffff;
-		text-align: center;
 	}
 
 	.bulletin {
@@ -431,7 +274,6 @@
 			width: min(100% - 32px, 1200px);
 		}
 
-		.quick-grid,
 		.split,
 		.search-section {
 			grid-template-columns: 1fr;
@@ -446,10 +288,6 @@
 	@media (max-width: 620px) {
 		h2 {
 			font-size: 32px;
-		}
-
-		.tabs {
-			gap: 30px;
 		}
 
 		.bulletin-grid,
