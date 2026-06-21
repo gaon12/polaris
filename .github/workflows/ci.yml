@@ -7,6 +7,10 @@ on:
       - main
       - master
 
+env:
+  DATABASE_URL: file:local.db
+  BETTER_AUTH_SECRET: a_very_long_better_auth_secret_for_testing_purposes
+
 jobs:
   verify:
     runs-on: ubuntu-latest
@@ -30,11 +34,18 @@ jobs:
       - name: Lint
         run: npm run lint
 
+      - name: Initialize DB
+        run: npx drizzle-kit push
+
       - name: Unit tests
         run: npm run test:unit -- --run
+
+      - name: Install Playwright browsers and dependencies
+        run: npx playwright install --with-deps
 
       - name: Browser tests
         run: npm run test:e2e
 
       - name: Build
         run: npm run build
+
