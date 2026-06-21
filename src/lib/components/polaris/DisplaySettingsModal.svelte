@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { X } from '@lucide/svelte';
+
 	type TextSize = '작게' | '보통' | '조금 크게' | '크게' | '가장 크게';
 	type DisplayMode = 'light' | 'dark' | 'system';
 
@@ -15,18 +17,26 @@
 		id: DisplayMode;
 		label: string;
 		description: string;
+		image: string;
 	}> = [
 		{
 			id: 'light',
 			label: '기본 (밝은 배경)',
-			description: '대부분의 환경에서 편하게 읽을 수 있어요.'
+			description: '대부분의 환경에서 편하게 읽을 수 있어요.',
+			image: '/images/settings/mode-light.png'
 		},
 		{
 			id: 'dark',
 			label: '선명하게 (어두운 배경)',
-			description: '빛이 적은 곳에서 눈부심을 줄여요.'
+			description: '빛이 적은 곳에서 눈부심을 줄여요.',
+			image: '/images/settings/mode-dark.png'
 		},
-		{ id: 'system', label: '시스템 설정', description: '기기의 화면 설정을 그대로 따릅니다.' }
+		{
+			id: 'system',
+			label: '시스템 설정',
+			description: '기기의 화면 설정을 그대로 따릅니다.',
+			image: '/images/settings/mode-system.png'
+		}
 	];
 
 	let textSize = $state<TextSize>('보통');
@@ -62,7 +72,7 @@
 					<p>온라인 주보를 읽는 환경에 맞게 글자 크기와 화면 모드를 조정하세요.</p>
 				</div>
 				<button aria-label="설정 닫기" class="icon-button" onclick={onClose} type="button">
-					<span aria-hidden="true"></span>
+					<X aria-hidden="true" size={32} strokeWidth={2} />
 				</button>
 			</div>
 
@@ -92,12 +102,8 @@
 				<div class="mode-options">
 					{#each displayModes as mode (mode.id)}
 						<label class:active={displayMode === mode.id} class="mode-option">
-							<span class={`mode-visual ${mode.id}`} aria-hidden="true">
-								<span class="visual-top"></span>
-								<span class="visual-line short"></span>
-								<span class="visual-line"></span>
-								<span class="visual-body"></span>
-								<span class="visual-button"></span>
+							<span class="mode-visual" aria-hidden="true">
+								<img src={mode.image} alt="" />
 							</span>
 							<input bind:group={displayMode} name="displayMode" type="radio" value={mode.id} />
 							<span class="mode-copy">
@@ -182,32 +188,14 @@
 	}
 
 	.icon-button {
-		position: relative;
+		display: grid;
+		place-items: center;
 		width: 48px;
 		height: 48px;
 		flex: 0 0 auto;
 		border: 0;
 		background: transparent;
 		cursor: pointer;
-	}
-
-	.icon-button::before,
-	.icon-button::after {
-		position: absolute;
-		top: 23px;
-		left: 11px;
-		width: 26px;
-		height: 2px;
-		background: #1e2124;
-		content: '';
-	}
-
-	.icon-button::before {
-		transform: rotate(45deg);
-	}
-
-	.icon-button::after {
-		transform: rotate(-45deg);
 	}
 
 	.setting-section {
@@ -282,7 +270,6 @@
 	}
 
 	.mode-visual {
-		position: relative;
 		display: block;
 		width: 150px;
 		height: 80px;
@@ -291,89 +278,16 @@
 		background: #dbe6f7;
 	}
 
-	.mode-visual::before {
-		position: absolute;
-		inset: 12px 14px;
-		border-radius: 3px;
-		background: #ffffff;
-		content: '';
+	.mode-option.active .mode-visual {
+		outline: 3px solid #256ef4;
+		outline-offset: 2px;
 	}
 
-	.visual-top,
-	.visual-line,
-	.visual-body,
-	.visual-button {
-		position: absolute;
-		z-index: 1;
+	.mode-visual img {
 		display: block;
-		border-radius: 2px;
-	}
-
-	.visual-top {
-		top: 18px;
-		left: 26px;
-		width: 104px;
-		height: 5px;
-		background: #31435d;
-	}
-
-	.visual-line {
-		top: 32px;
-		left: 28px;
-		width: 86px;
-		height: 5px;
-		background: #9aaac1;
-	}
-
-	.visual-line.short {
-		top: 42px;
-		width: 58px;
-	}
-
-	.visual-body {
-		right: 45px;
-		bottom: 13px;
-		left: 28px;
-		height: 28px;
-		background: #d8e1ef;
-	}
-
-	.visual-button {
-		right: 22px;
-		bottom: 22px;
-		width: 18px;
-		height: 5px;
-		background: #256ef4;
-	}
-
-	.mode-visual.dark {
-		background: #10233d;
-	}
-
-	.mode-visual.dark::before {
-		background: #203957;
-	}
-
-	.mode-visual.dark .visual-top {
-		background: #d7e5f8;
-	}
-
-	.mode-visual.dark .visual-line {
-		background: #8fa4bf;
-	}
-
-	.mode-visual.dark .visual-body {
-		background: #39506c;
-	}
-
-	.mode-visual.system {
-		background: linear-gradient(90deg, #dbe6f7 0 50%, #10233d 50% 100%);
-	}
-
-	.mode-visual.system::before {
-		inset: 12px 74px 12px 14px;
-		background: #ffffff;
-		box-shadow: 60px 0 0 #203957;
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
 	}
 
 	.modal-actions {

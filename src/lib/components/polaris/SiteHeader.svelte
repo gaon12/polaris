@@ -4,6 +4,7 @@
 	import { page } from '$app/state';
 	import { locales, localizeHref } from '$lib/paraglide/runtime';
 	import type { MenuItem } from '$lib/polaris/home';
+	import { Globe, Search } from '@lucide/svelte';
 	import BrandMark from './BrandMark.svelte';
 	import DisplaySettingsModal from './DisplaySettingsModal.svelte';
 
@@ -47,7 +48,7 @@
 	<div class="utility-wrap">
 		<div class="utility" aria-label="보조 메뉴">
 			<label class="language-control">
-				<span class="globe-icon" aria-hidden="true"></span>
+				<Globe aria-hidden="true" size={18} strokeWidth={2.1} />
 				<span>언어</span>
 				<select
 					aria-label="언어"
@@ -79,7 +80,7 @@
 			</span>
 		</a>
 		<button class="search-link" onclick={() => scrollToTarget('#search')} type="button">
-			<span class="search-icon" aria-hidden="true"></span>
+			<Search aria-hidden="true" size={22} strokeWidth={2.2} />
 			<strong>통합검색</strong>
 		</button>
 	</div>
@@ -168,7 +169,7 @@
 		gap: 8px;
 	}
 
-	label > span:not(.globe-icon) {
+	label > span {
 		position: absolute;
 		width: 1px;
 		height: 1px;
@@ -179,35 +180,6 @@
 	.language-control {
 		min-height: 36px;
 		gap: 6px;
-	}
-
-	.globe-icon {
-		position: relative;
-		display: inline-block;
-		width: 18px;
-		height: 18px;
-		border: 1.8px solid currentColor;
-		border-radius: 50%;
-	}
-
-	.globe-icon::before,
-	.globe-icon::after {
-		position: absolute;
-		content: '';
-	}
-
-	.globe-icon::before {
-		inset: 3px 5px;
-		border-right: 1.5px solid currentColor;
-		border-left: 1.5px solid currentColor;
-		border-radius: 50%;
-	}
-
-	.globe-icon::after {
-		top: 7px;
-		left: 2px;
-		width: 12px;
-		border-top: 1.5px solid currentColor;
 	}
 
 	select,
@@ -275,25 +247,6 @@
 		color: #1e2124;
 		cursor: pointer;
 		font-size: 18px;
-	}
-
-	.search-icon {
-		position: relative;
-		width: 22px;
-		height: 22px;
-		border: 2px solid #1e2124;
-		border-radius: 50%;
-	}
-
-	.search-icon::after {
-		position: absolute;
-		right: -6px;
-		bottom: -5px;
-		width: 8px;
-		height: 2px;
-		background: #1e2124;
-		content: '';
-		transform: rotate(45deg);
 	}
 
 	.main-menu {
