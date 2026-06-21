@@ -88,6 +88,7 @@
 			>
 			<span class="divider" aria-hidden="true"></span>
 			<a class="utility-item utility-link" href={resolve('/login')}>로그인</a>
+			<span class="auth-divider" aria-hidden="true">/</span>
 			<a class="utility-item utility-link signup-link" href={resolve('/signup')}>회원가입</a>
 		</div>
 	</div>
@@ -103,7 +104,8 @@
 		<div class="header-actions">
 			<button class="search-link" onclick={() => scrollToTarget('#search')} type="button">
 				<Search aria-hidden="true" size={22} strokeWidth={2.2} />
-				<strong>통합검색</strong>
+				<strong class="desktop-text">통합검색</strong>
+				<strong class="mobile-text">검색</strong>
 			</button>
 			<button
 				aria-controls="mobile-menu-panel"
@@ -114,11 +116,12 @@
 				type="button"
 			>
 				{#if mobileMenuOpen}
-					<X aria-hidden="true" size={28} strokeWidth={2.2} />
+					<X aria-hidden="true" size={22} strokeWidth={2.2} />
+					<strong>닫기</strong>
 				{:else}
-					<Menu aria-hidden="true" size={28} strokeWidth={2.2} />
+					<Menu aria-hidden="true" size={22} strokeWidth={2.2} />
+					<strong>메뉴</strong>
 				{/if}
-				<span class="visually-hidden">전체메뉴</span>
 			</button>
 		</div>
 	</div>
@@ -176,26 +179,29 @@
 						<a href={resolve('/login')}>로그인</a>
 						<a class="signup-link" href={resolve('/signup')}>회원가입</a>
 					</div>
-					<label class="language-control">
-						<Globe aria-hidden="true" size={18} strokeWidth={2.1} />
-						<span class="visually-hidden">언어</span>
-						<select
-							aria-label="언어"
-							bind:value={selectedLocale}
-							class="language-select"
-							onchange={changeLanguage}
+					<div class="mobile-settings-row">
+						<label class="language-control">
+							<Globe aria-hidden="true" size={18} strokeWidth={2.1} />
+							<span class="visually-hidden">언어</span>
+							<select
+								aria-label="언어"
+								bind:value={selectedLocale}
+								class="language-select"
+								onchange={changeLanguage}
+							>
+								{#each locales as locale (locale)}
+									<option value={locale}>{locale === 'ko' ? '한국어' : locale.toUpperCase()}</option
+									>
+								{/each}
+							</select>
+						</label>
+						<button
+							aria-controls="display-settings"
+							class="settings-trigger"
+							type="button"
+							onclick={openSettings}>글자·화면 설정</button
 						>
-							{#each locales as locale (locale)}
-								<option value={locale}>{locale === 'ko' ? '한국어' : locale.toUpperCase()}</option>
-							{/each}
-						</select>
-					</label>
-					<button
-						aria-controls="display-settings"
-						class="settings-trigger"
-						type="button"
-						onclick={openSettings}>글자·화면 설정</button
-					>
+					</div>
 				</div>
 				<nav class="mobile-menu" aria-label="모바일 주 메뉴">
 					{#each menuItems as item (item.label)}
