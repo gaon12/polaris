@@ -157,64 +157,78 @@
 	{/if}
 
 	{#if mobileMenuOpen}
-		<div class="mobile-menu-panel" id="mobile-menu-panel">
-			<div class="mobile-utility" aria-label="모바일 보조 메뉴">
-				<div class="mobile-auth">
-					<a href={resolve('/login')}>로그인</a>
-					<a class="signup-link" href={resolve('/signup')}>회원가입</a>
-				</div>
-				<label class="language-control">
-					<Globe aria-hidden="true" size={18} strokeWidth={2.1} />
-					<span class="visually-hidden">언어</span>
-					<select
-						aria-label="언어"
-						bind:value={selectedLocale}
-						class="language-select"
-						onchange={changeLanguage}
-					>
-						{#each locales as locale (locale)}
-							<option value={locale}>{locale === 'ko' ? '한국어' : locale.toUpperCase()}</option>
-						{/each}
-					</select>
-				</label>
-				<button
-					aria-controls="display-settings"
-					class="settings-trigger"
-					type="button"
-					onclick={openSettings}>글자·화면 설정</button
-				>
-			</div>
-			<nav class="mobile-menu" aria-label="모바일 주 메뉴">
-				{#each menuItems as item (item.label)}
-					<button
-						aria-controls="mobile-menu-detail"
-						aria-expanded={activeMenu === item.label}
-						class:active={activeMenu === item.label}
-						onclick={() => toggleMenu(item)}
-						type="button"
-					>
-						<span>{item.label}</span>
-						<span class="chevron" aria-hidden="true"></span>
+		<div class="mobile-menu-layer">
+			<button
+				aria-label="전체메뉴 닫기"
+				class="mobile-menu-backdrop"
+				onclick={() => (mobileMenuOpen = false)}
+				type="button"
+			></button>
+			<aside aria-label="전체메뉴" class="mobile-menu-panel" id="mobile-menu-panel">
+				<div class="mobile-menu-head">
+					<strong>전체메뉴</strong>
+					<button aria-label="전체메뉴 닫기" onclick={() => (mobileMenuOpen = false)} type="button">
+						<X aria-hidden="true" size={28} strokeWidth={2.2} />
 					</button>
-				{/each}
-			</nav>
-			{#if activeMenuItem}
-				<div class="menu-detail mobile-menu-detail" id="mobile-menu-detail">
-					<div>
-						<p>메뉴 상세</p>
-						<h2>{activeMenuItem.label}</h2>
-						<span>{activeMenuItem.summary}</span>
+				</div>
+				<div class="mobile-utility" aria-label="모바일 보조 메뉴">
+					<div class="mobile-auth">
+						<a href={resolve('/login')}>로그인</a>
+						<a class="signup-link" href={resolve('/signup')}>회원가입</a>
 					</div>
-					<ul>
-						{#each activeMenuItem.points as point (point)}
-							<li>{point}</li>
-						{/each}
-					</ul>
-					<button type="button" onclick={() => openMenuTarget(activeMenuItem)}
-						>{activeMenuItem.action}</button
+					<label class="language-control">
+						<Globe aria-hidden="true" size={18} strokeWidth={2.1} />
+						<span class="visually-hidden">언어</span>
+						<select
+							aria-label="언어"
+							bind:value={selectedLocale}
+							class="language-select"
+							onchange={changeLanguage}
+						>
+							{#each locales as locale (locale)}
+								<option value={locale}>{locale === 'ko' ? '한국어' : locale.toUpperCase()}</option>
+							{/each}
+						</select>
+					</label>
+					<button
+						aria-controls="display-settings"
+						class="settings-trigger"
+						type="button"
+						onclick={openSettings}>글자·화면 설정</button
 					>
 				</div>
-			{/if}
+				<nav class="mobile-menu" aria-label="모바일 주 메뉴">
+					{#each menuItems as item (item.label)}
+						<button
+							aria-controls="mobile-menu-detail"
+							aria-expanded={activeMenu === item.label}
+							class:active={activeMenu === item.label}
+							onclick={() => toggleMenu(item)}
+							type="button"
+						>
+							<span>{item.label}</span>
+							<span class="chevron" aria-hidden="true"></span>
+						</button>
+					{/each}
+				</nav>
+				{#if activeMenuItem}
+					<div class="menu-detail mobile-menu-detail" id="mobile-menu-detail">
+						<div>
+							<p>메뉴 상세</p>
+							<h2>{activeMenuItem.label}</h2>
+							<span>{activeMenuItem.summary}</span>
+						</div>
+						<ul>
+							{#each activeMenuItem.points as point (point)}
+								<li>{point}</li>
+							{/each}
+						</ul>
+						<button type="button" onclick={() => openMenuTarget(activeMenuItem)}
+							>{activeMenuItem.action}</button
+						>
+					</div>
+				{/if}
+			</aside>
 		</div>
 	{/if}
 </header>
