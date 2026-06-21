@@ -4,6 +4,12 @@
 - **Package Manager**: npm
 - **Add-ons**: prettier, eslint, vitest, playwright, sveltekit-adapter, drizzle, better-auth, paraglide, mcp
 
+## Project Rules
+
+- Follow [docs/project-rules.md](docs/project-rules.md) for implementation order, file size limits, commit style, UX rules, and verification.
+- Keep source files at 500 lines or fewer by splitting domain UI into folders and focused components.
+- Use Go-inspired clarity: simple control flow, explicit data, small functions, and minimal abstraction.
+
 ---
 
 You are able to use the Svelte MCP server, where you have access to comprehensive Svelte 5 and SvelteKit documentation. Here's how to use the available tools effectively:
