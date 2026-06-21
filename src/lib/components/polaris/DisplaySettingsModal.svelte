@@ -1,4 +1,7 @@
 <script lang="ts">
+	type TextSize = '작게' | '보통' | '조금 크게' | '크게' | '가장 크게';
+	type DisplayMode = 'light' | 'dark' | 'system';
+
 	let {
 		open,
 		onClose
@@ -7,13 +10,37 @@
 		onClose: () => void;
 	} = $props();
 
-	let textScale = $state('보통');
-	let contrast = $state('기본');
+	const textSizes: TextSize[] = ['작게', '보통', '조금 크게', '크게', '가장 크게'];
+	const displayModes: Array<{
+		id: DisplayMode;
+		label: string;
+		description: string;
+	}> = [
+		{
+			id: 'light',
+			label: '기본 (밝은 배경)',
+			description: '대부분의 환경에서 편하게 읽을 수 있어요.'
+		},
+		{
+			id: 'dark',
+			label: '선명하게 (어두운 배경)',
+			description: '빛이 적은 곳에서 눈부심을 줄여요.'
+		},
+		{ id: 'system', label: '시스템 설정', description: '기기의 화면 설정을 그대로 따릅니다.' }
+	];
+
+	let textSize = $state<TextSize>('보통');
+	let displayMode = $state<DisplayMode>('light');
 
 	function closeOnEscape(event: KeyboardEvent) {
 		if (event.key === 'Escape' && open) {
 			onClose();
 		}
+	}
+
+	function resetSettings() {
+		textSize = '보통';
+		displayMode = 'light';
 	}
 </script>
 
@@ -31,47 +58,61 @@
 		>
 			<div class="modal-head">
 				<div>
-					<p>화면 설정</p>
-					<h2 id="settings-title">읽기 편한 화면으로 조정</h2>
+					<h2 id="settings-title">글자·화면 표시 설정</h2>
+					<p>온라인 주보를 읽는 환경에 맞게 글자 크기와 화면 모드를 조정하세요.</p>
 				</div>
-				<button aria-label="설정 닫기" class="icon-button" onclick={onClose} type="button">×</button
-				>
+				<button aria-label="설정 닫기" class="icon-button" onclick={onClose} type="button">
+					<span aria-hidden="true"></span>
+				</button>
 			</div>
 
-			<div class="setting-group">
-				<strong>글자 크기</strong>
-				<div class="segmented" role="group" aria-label="글자 크기">
-					{#each ['작게', '보통', '크게'] as option (option)}
+			<section class="setting-section" aria-labelledby="text-size-title">
+				<div>
+					<h3 id="text-size-title">글자 크기</h3>
+					<p>성도들이 말씀과 교회 소식을 더 편하게 읽을 수 있도록 크기를 선택합니다.</p>
+				</div>
+				<div class="size-options" role="group" aria-label="글자 크기">
+					{#each textSizes as option (option)}
 						<button
-							class:active={textScale === option}
-							onclick={() => (textScale = option)}
+							class:active={textSize === option}
+							onclick={() => (textSize = option)}
 							type="button"
 						>
 							{option}
 						</button>
 					{/each}
 				</div>
-			</div>
+			</section>
 
-			<div class="setting-group">
-				<strong>화면 대비</strong>
-				<div class="segmented" role="group" aria-label="화면 대비">
-					{#each ['기본', '선명하게'] as option (option)}
-						<button
-							class:active={contrast === option}
-							onclick={() => (contrast = option)}
-							type="button"
-						>
-							{option}
-						</button>
+			<section class="setting-section" aria-labelledby="display-mode-title">
+				<div>
+					<h3 id="display-mode-title">화면 표시 모드</h3>
+					<p>밝은 배경, 어두운 배경, 기기 설정 중에서 읽기 편한 방식을 고릅니다.</p>
+				</div>
+				<div class="mode-options">
+					{#each displayModes as mode (mode.id)}
+						<label class:active={displayMode === mode.id} class="mode-option">
+							<span class={`mode-visual ${mode.id}`} aria-hidden="true">
+								<span class="visual-top"></span>
+								<span class="visual-line short"></span>
+								<span class="visual-line"></span>
+								<span class="visual-body"></span>
+								<span class="visual-button"></span>
+							</span>
+							<input bind:group={displayMode} name="displayMode" type="radio" value={mode.id} />
+							<span class="mode-copy">
+								<strong>{mode.label}</strong>
+								<small>{mode.description}</small>
+							</span>
+						</label>
 					{/each}
 				</div>
-			</div>
+			</section>
 
-			<p class="helper">
-				설정 UI는 먼저 화면 구조를 잡아둔 상태입니다. 실제 저장은 사용자 설정 저장소와 연결하면
-				됩니다.
-			</p>
+			<div class="modal-actions">
+				<button class="secondary" onclick={resetSettings} type="button">초기화</button>
+				<button class="primary" onclick={onClose} type="button">닫기</button>
+			</div>
 		</div>
 	</div>
 {/if}
@@ -98,76 +139,304 @@
 
 	.modal {
 		position: relative;
-		width: min(100%, 480px);
-		border-radius: 8px;
+		width: min(100%, 640px);
+		max-height: min(760px, calc(100vh - 48px));
+		overflow: auto;
+		border: 1px solid #cdd1d5;
+		border-radius: 16px;
 		background: #ffffff;
 		box-shadow: 0 24px 60px rgba(3, 22, 58, 0.22);
 		color: #1e2124;
+		word-break: keep-all;
+		overflow-wrap: break-word;
 	}
 
 	.modal-head {
 		display: flex;
 		justify-content: space-between;
-		gap: 20px;
-		padding: 28px 28px 18px;
-		border-bottom: 1px solid #e6e8ea;
+		gap: 24px;
+		padding: 34px 32px 14px;
 	}
 
-	.modal-head p {
-		margin: 0 0 6px;
-		color: #0b50d0;
-		font-weight: 700;
+	.modal-head h2,
+	.modal-head p,
+	.setting-section h3,
+	.setting-section p {
+		margin: 0;
 	}
 
 	.modal-head h2 {
-		margin: 0;
-		font-size: 24px;
-		line-height: 1.3;
+		font-size: 30px;
+		line-height: 1.25;
+	}
+
+	.modal-head p,
+	.setting-section p,
+	.mode-copy small {
+		color: #58616a;
+	}
+
+	.modal-head p {
+		margin-top: 10px;
+		font-size: 16px;
 	}
 
 	.icon-button {
-		width: 44px;
-		height: 44px;
-		border: 1px solid #cdd1d5;
-		border-radius: 8px;
-		background: #ffffff;
-		font-size: 28px;
-		line-height: 1;
+		position: relative;
+		width: 48px;
+		height: 48px;
+		flex: 0 0 auto;
+		border: 0;
+		background: transparent;
 		cursor: pointer;
 	}
 
-	.setting-group {
-		display: grid;
-		gap: 12px;
-		padding: 22px 28px 0;
+	.icon-button::before,
+	.icon-button::after {
+		position: absolute;
+		top: 23px;
+		left: 11px;
+		width: 26px;
+		height: 2px;
+		background: #1e2124;
+		content: '';
 	}
 
-	.segmented {
+	.icon-button::before {
+		transform: rotate(45deg);
+	}
+
+	.icon-button::after {
+		transform: rotate(-45deg);
+	}
+
+	.setting-section {
 		display: grid;
-		grid-template-columns: repeat(auto-fit, minmax(90px, 1fr));
+		gap: 18px;
+		padding: 24px 32px 0;
+	}
+
+	.setting-section h3 {
+		font-size: 20px;
+		line-height: 1.35;
+	}
+
+	.setting-section p {
+		margin-top: 8px;
+		font-size: 16px;
+	}
+
+	.size-options {
+		display: grid;
+		grid-template-columns: repeat(5, minmax(0, 1fr));
 		gap: 8px;
 	}
 
-	.segmented button {
+	.size-options button {
 		min-height: 48px;
 		border: 1px solid #cdd1d5;
 		border-radius: 8px;
 		background: #ffffff;
+		color: #1e2124;
 		cursor: pointer;
 		font-weight: 700;
 	}
 
-	.segmented .active {
+	.size-options .active {
 		border-color: #256ef4;
 		background: #ecf2fe;
 		color: #0b50d0;
 	}
 
-	.helper {
+	.mode-options {
+		display: grid;
+		gap: 16px;
+	}
+
+	.mode-option {
+		display: grid;
+		grid-template-columns: 150px 28px minmax(0, 1fr);
+		align-items: center;
+		gap: 18px;
+		padding: 4px 0;
+		cursor: pointer;
+	}
+
+	.mode-option input {
+		width: 26px;
+		height: 26px;
 		margin: 0;
-		padding: 22px 28px 28px;
-		color: #58616a;
+		accent-color: #256ef4;
+	}
+
+	.mode-copy {
+		display: grid;
+		gap: 5px;
+		font-size: 20px;
+		line-height: 1.35;
+	}
+
+	.mode-copy small {
 		font-size: 15px;
-		word-break: keep-all;
+		font-weight: 500;
+	}
+
+	.mode-visual {
+		position: relative;
+		display: block;
+		width: 150px;
+		height: 80px;
+		overflow: hidden;
+		border-radius: 8px;
+		background: #dbe6f7;
+	}
+
+	.mode-visual::before {
+		position: absolute;
+		inset: 12px 14px;
+		border-radius: 3px;
+		background: #ffffff;
+		content: '';
+	}
+
+	.visual-top,
+	.visual-line,
+	.visual-body,
+	.visual-button {
+		position: absolute;
+		z-index: 1;
+		display: block;
+		border-radius: 2px;
+	}
+
+	.visual-top {
+		top: 18px;
+		left: 26px;
+		width: 104px;
+		height: 5px;
+		background: #31435d;
+	}
+
+	.visual-line {
+		top: 32px;
+		left: 28px;
+		width: 86px;
+		height: 5px;
+		background: #9aaac1;
+	}
+
+	.visual-line.short {
+		top: 42px;
+		width: 58px;
+	}
+
+	.visual-body {
+		right: 45px;
+		bottom: 13px;
+		left: 28px;
+		height: 28px;
+		background: #d8e1ef;
+	}
+
+	.visual-button {
+		right: 22px;
+		bottom: 22px;
+		width: 18px;
+		height: 5px;
+		background: #256ef4;
+	}
+
+	.mode-visual.dark {
+		background: #10233d;
+	}
+
+	.mode-visual.dark::before {
+		background: #203957;
+	}
+
+	.mode-visual.dark .visual-top {
+		background: #d7e5f8;
+	}
+
+	.mode-visual.dark .visual-line {
+		background: #8fa4bf;
+	}
+
+	.mode-visual.dark .visual-body {
+		background: #39506c;
+	}
+
+	.mode-visual.system {
+		background: linear-gradient(90deg, #dbe6f7 0 50%, #10233d 50% 100%);
+	}
+
+	.mode-visual.system::before {
+		inset: 12px 74px 12px 14px;
+		background: #ffffff;
+		box-shadow: 60px 0 0 #203957;
+	}
+
+	.modal-actions {
+		display: flex;
+		justify-content: flex-end;
+		gap: 10px;
+		padding: 24px 32px 32px;
+	}
+
+	.modal-actions button {
+		min-width: 98px;
+		min-height: 58px;
+		border-radius: 8px;
+		cursor: pointer;
+		font: inherit;
+		font-weight: 700;
+	}
+
+	.secondary {
+		border: 1px solid #58616a;
+		background: #ffffff;
+		color: #1e2124;
+	}
+
+	.primary {
+		border: 1px solid #256ef4;
+		background: #256ef4;
+		color: #ffffff;
+	}
+
+	@media (max-width: 620px) {
+		.modal-layer {
+			align-items: end;
+			padding: 12px;
+		}
+
+		.modal {
+			max-height: min(760px, calc(100vh - 24px));
+		}
+
+		.modal-head,
+		.setting-section,
+		.modal-actions {
+			padding-right: 22px;
+			padding-left: 22px;
+		}
+
+		.size-options {
+			grid-template-columns: repeat(2, minmax(0, 1fr));
+		}
+
+		.mode-option {
+			grid-template-columns: 112px 26px minmax(0, 1fr);
+			gap: 12px;
+		}
+
+		.mode-visual {
+			width: 112px;
+			height: 72px;
+		}
+
+		.mode-copy {
+			font-size: 17px;
+		}
 	}
 </style>

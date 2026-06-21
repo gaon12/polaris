@@ -46,7 +46,8 @@
 <header class="site-header">
 	<div class="utility-wrap">
 		<div class="utility" aria-label="보조 메뉴">
-			<label>
+			<label class="language-control">
+				<span class="globe-icon" aria-hidden="true"></span>
 				<span>언어</span>
 				<select
 					aria-label="언어"
@@ -60,8 +61,11 @@
 				</select>
 			</label>
 			<span class="divider" aria-hidden="true"></span>
-			<button aria-controls="display-settings" type="button" onclick={() => (settingsOpen = true)}
-				>글자·화면 설정</button
+			<button
+				aria-controls="display-settings"
+				class="settings-trigger"
+				type="button"
+				onclick={() => (settingsOpen = true)}>글자·화면 설정</button
 			>
 		</div>
 	</div>
@@ -147,13 +151,13 @@
 	.utility-wrap {
 		display: flex;
 		justify-content: flex-end;
-		padding: 18px 0 8px;
+		padding: 14px 0 6px;
 	}
 
 	.utility {
 		display: flex;
 		align-items: center;
-		gap: 14px;
+		gap: 12px;
 		color: #33363d;
 		font-size: 15px;
 	}
@@ -164,12 +168,46 @@
 		gap: 8px;
 	}
 
-	label span {
+	label > span:not(.globe-icon) {
 		position: absolute;
 		width: 1px;
 		height: 1px;
 		overflow: hidden;
 		clip: rect(0 0 0 0);
+	}
+
+	.language-control {
+		min-height: 36px;
+		gap: 6px;
+	}
+
+	.globe-icon {
+		position: relative;
+		display: inline-block;
+		width: 18px;
+		height: 18px;
+		border: 1.8px solid currentColor;
+		border-radius: 50%;
+	}
+
+	.globe-icon::before,
+	.globe-icon::after {
+		position: absolute;
+		content: '';
+	}
+
+	.globe-icon::before {
+		inset: 3px 5px;
+		border-right: 1.5px solid currentColor;
+		border-left: 1.5px solid currentColor;
+		border-radius: 50%;
+	}
+
+	.globe-icon::after {
+		top: 7px;
+		left: 2px;
+		width: 12px;
+		border-top: 1.5px solid currentColor;
 	}
 
 	select,
@@ -184,12 +222,16 @@
 	}
 
 	select {
-		padding: 0 32px 0 10px;
-		border-color: #cdd1d5;
+		padding: 0 18px 0 0;
+		border-color: transparent;
+		background: transparent;
+		appearance: none;
 	}
 
-	.utility button {
+	.settings-trigger {
 		padding: 0 4px;
+		border-color: transparent;
+		background: transparent;
 	}
 
 	.divider {
@@ -385,7 +427,7 @@
 
 	@media (max-width: 620px) {
 		.utility-wrap {
-			justify-content: flex-start;
+			justify-content: flex-end;
 		}
 
 		.brand strong {
