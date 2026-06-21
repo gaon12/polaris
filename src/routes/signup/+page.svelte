@@ -5,4 +5,4 @@
 	let { form }: { form: ActionData } = $props();
 </script>
 
-<AuthShell mode="signup" message={form?.message} />
+<AuthShell mode="signup" message={form?.message} success={form?.success} />
